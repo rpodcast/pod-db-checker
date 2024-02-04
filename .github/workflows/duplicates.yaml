@@ -30,11 +30,6 @@ jobs:
         with:
           packages: jq
           version: 1.0
-
-      - name: Parse system dependencies
-        id: parse-dep-step
-        run: |
-          echo "jq -r '.sysreqs | join(" ")' dependencies.json" >> "$DEPS_ENV"
       
       - name: Install system dependencies
         id: install-deps-step
