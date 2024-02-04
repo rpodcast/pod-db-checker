@@ -42,7 +42,7 @@ jobs:
         env:
           DEPS_ENV: ${{ steps.parse-dep-step.DEPS_ENV }}
         with:
-          packages: ${{ DEPS_ENV }}
+          packages: libarchive-dev libcurl4-openssl-dev libssl-dev make
 
       - name: Setup r2u
         id: r2u-step
