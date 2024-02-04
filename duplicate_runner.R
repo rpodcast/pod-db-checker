@@ -129,12 +129,14 @@ logger::log_info("Sending database parquet file to object storage")
 s3_file_copy(
   path = fs::path(db_tmp_dir, "podcast_dup_df.parquet"),
   new_path = paste0(s3_bucket_path, fs::path("exports", "podcast_dup_df.parquet")),
-  ACL = "public-read"
+  ACL = "public-read",
+  overwrite = TRUE
 )
 
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
   new_path = paste0(s3_bucket_path, fs::path(log_dir, log_file)),
-  ACL = "public-read"
+  ACL = "public-read",
+  overwrite = TRUE
 )
