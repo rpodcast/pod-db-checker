@@ -77,6 +77,12 @@
       "source": "cran"
     },
     {
+      "package": "pointblank",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
       "package": "reclin2",
       "installed": false,
       "dev": false,
