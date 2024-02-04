@@ -46,6 +46,10 @@ jobs:
       - name: SessionInfo
         id: sessioninfo-step
         run: R -q -e 'sessionInfo()'
+
+      - name: Install deps R package
+        id: r-pkg-deps-step
+        run: Rscript -e 'install.packages("deps")'
         
       - name: Package Dependencies
         id: r-package-dependencies-step
