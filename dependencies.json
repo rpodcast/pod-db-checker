@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "rver": null,
+  "repos": [],
+  "sysreqs": ["libarchive-dev", "libcurl4-openssl-dev", "libssl-dev", "make"],
+  "packages": [
+    {
+      "package": "anytime",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "archive",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "arrow",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "curl",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "DBI",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "dbplyr",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "dplyr",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "fs",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "glue",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "here",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "jsonlite",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "logger",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "reclin2",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "RSQLite",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "s3fs",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    }
+  ]
+}

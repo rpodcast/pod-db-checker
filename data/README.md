@@ -1,0 +1,1 @@
+Use this directory to store the Podcast 2.0 SQLite database pulled from <https://public.podcastindex.org/podcastindex_feeds.db.tgz>. Due to the size of the database file, the contents of this directory with the exception of this README will not be version-controlled.
