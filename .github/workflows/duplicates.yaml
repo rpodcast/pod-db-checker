@@ -5,6 +5,8 @@ name: duplicates
 on:
   push:
    branches: [main, master]
+   paths:
+    - 'duplicate_runner.R'
   #release:
   # schedule:
   # - cron: "31 10 * * *"
