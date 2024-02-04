@@ -94,7 +94,7 @@ reclin2::select_threshold(
 )
 
 # Perform de-duplication
-logger:log_info("Performing deduplication")
+logger::log_info("Performing deduplication")
 
 db_dedup <- reclin2::deduplicate_equivalence(
   db_pairs,
