@@ -133,6 +133,18 @@ s3_file_copy(
   overwrite = TRUE
 )
 
+# create rds file of duplicate data and send to s3
+logger::log_info("Creating rds version of duplicate dataset")
+saveRDS(podcast_dup_df, fs::path(db_tmp_dir, "podcast_dup_df.rds"))
+
+logger::log_info("Sending database rds file to object storage")
+s3_file_copy(
+  path = fs::path(db_tmp_dir, "podcast_dup_df.rds"),
+  new_path = paste0(s3_bucket_path, fs::path("exports", "podcast_dup_df.rds")),
+  ACL = "public-read",
+  overwrite = TRUE
+)
+
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
