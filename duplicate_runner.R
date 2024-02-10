@@ -145,6 +145,39 @@ s3_file_copy(
   overwrite = TRUE
 )
 
+# create duplicates analysis metrics data frame
+logger::log_info("Deriving podcast duplicate analytics")
+analysis_metrics_df <- podcast_dup_df |>
+  tibble::as_tibble() |>
+  nest(.by = record_group) |>
+  mutate(
+    metrics = purrr::map(data, ~{
+      tibble::tibble(
+        n_records = nrow(.x),
+        n_distinct_podcastGuid = length(unique(.x$podcastGuid)),
+        n_distinct_title = length(unique(.x$title)),
+        n_distinct_chash = length(unique(.x$chash)),
+        n_distinct_description = length(unique(.x$description)),
+        n_distinct_episode_count = length(unique(.x$episodeCount)),
+        n_distinct_imageUrl = length(unique(.x$imageUrl))
+      )
+    })
+  ) |>
+  unnest_wider(col = metrics) |>
+  select(-data)
+
+# create rds file of analysis metrics and send to s3
+logger::log_info("Creating rds version of analysis metrics dataset")
+saveRDS(analysis_metrics_df, fs::path(db_tmp_dir, "analysis_metrics_df.rds"))
+
+logger::log_info("Sending analysis metrics rds file to object storage")
+s3_file_copy(
+  path = fs::path(db_tmp_dir, "analysis_metrics_df.rds"),
+  new_path = paste0(s3_bucket_path, fs::path("exports", "analysis_metrics_df.rds")),
+  ACL = "public-read",
+  overwrite = TRUE
+)
+
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
