@@ -3,6 +3,7 @@ library(DBI)
 library(RSQLite)
 library(dplyr)
 library(dbplyr)
+library(tidyr)
 library(anytime)
 library(logger)
 library(s3fs)
@@ -43,7 +44,7 @@ logger::log_layout(
 
 # download and extract podcast database ----
 logger::log_info("Downloading podcast database")
-curl::curl_download(db_url, destfile = fs::path(db_tmp_dir, db_tgz_file), quiet = FALSE)
+curl::curl_download(db_url, destfile = fs::path(db_tmp_dir, db_tgz_file), quiet = TRUE)
 
 logger::log_info("Extracting podcast database file")
 archive::archive_extract(fs::path(db_tmp_dir, db_tgz_file), dir = db_tmp_dir)
