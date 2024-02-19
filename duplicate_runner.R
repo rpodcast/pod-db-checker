@@ -150,6 +150,15 @@ s3_file_copy(
 logger::log_info("Deriving podcast duplicate analytics")
 analysis_metrics_df <- podcast_dup_df |>
   tibble::as_tibble() |>
+  mutate(newestItemPubdate = na_if(newestItemPubdate, 0),
+         oldestItemPubdate = na_if(oldestItemPubdate, 0),
+         lastUpdate = na_if(lastUpdate, 0),
+         createdOn = na_if(createdOn, 0)) |>
+  mutate(newestItemPubdate_p = anytime(newestItemPubdate),
+         oldestItemPubdate_p = anytime(oldestItemPubdate),
+         createdOn_p = anytime(createdOn)) |>
+  mutate(pub_timespan_days = lubridate::interval(oldestItemPubdate_p, newestItemPubdate_p) / lubridate::ddays(1)) |>
+  mutate(created_timespan_days = lubridate::interval(createdOn_p, Sys.time()) / lubridate::ddays(1)) |>
   nest(.by = record_group) |>
   mutate(
     metrics = purrr::map(data, ~{
@@ -160,7 +169,11 @@ analysis_metrics_df <- podcast_dup_df |>
         n_distinct_chash = length(unique(.x$chash)),
         n_distinct_description = length(unique(.x$description)),
         n_distinct_episode_count = length(unique(.x$episodeCount)),
-        n_distinct_imageUrl = length(unique(.x$imageUrl))
+        n_distinct_imageUrl = length(unique(.x$imageUrl)),
+        med_newestEnclosureDuration = median(.x$newestEnclosureDuration),
+        newestEnclosureDuration_list = list(.x$newestEnclosureDuration),
+        created_timespan_days_list = list(.x$created_timespan_days),
+        pub_timespan_days_list = list(.x$pub_timespan_days)
       )
     })
   ) |>
