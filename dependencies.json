@@ -77,7 +77,19 @@
       "source": "cran"
     },
     {
+      "package": "lubridate",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
       "package": "pointblank",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "purrr",
       "installed": false,
       "dev": false,
       "source": "cran"
@@ -96,6 +108,18 @@
     },
     {
       "package": "s3fs",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "tibble",
+      "installed": false,
+      "dev": false,
+      "source": "cran"
+    },
+    {
+      "package": "tidyr",
       "installed": false,
       "dev": false,
       "source": "cran"
