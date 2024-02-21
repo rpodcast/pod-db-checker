@@ -170,10 +170,12 @@ analysis_metrics_df <- podcast_dup_df |>
         n_distinct_description = length(unique(.x$description)),
         n_distinct_episode_count = length(unique(.x$episodeCount)),
         n_distinct_imageUrl = length(unique(.x$imageUrl)),
-        med_newestEnclosureDuration = median(.x$newestEnclosureDuration),
-        newestEnclosureDuration_list = list(.x$newestEnclosureDuration),
-        created_timespan_days_list = list(.x$created_timespan_days),
-        pub_timespan_days_list = list(.x$pub_timespan_days)
+        med_newestEnclosureDuration = median(.x$newestEnclosureDuration, na.rm = TRUE),
+        med_created_timespan_days = median(.x$created_timespan_days, na.rm = TRUE),
+        med_pub_timespan_days = median(.x$pub_timespan_days)
+        #newestEnclosureDuration_list = list(.x$newestEnclosureDuration),
+        #created_timespan_days_list = list(.x$created_timespan_days),
+        #pub_timespan_days_list = list(.x$pub_timespan_days)
       )
     })
   ) |>
