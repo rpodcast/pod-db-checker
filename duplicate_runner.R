@@ -152,6 +152,7 @@ analysis_metrics_df <- podcast_dup_df |>
   tibble::as_tibble() |>
   mutate(newestItemPubdate = na_if(newestItemPubdate, 0),
          oldestItemPubdate = na_if(oldestItemPubdate, 0),
+         title = na_if(title, ""),
          lastUpdate = na_if(lastUpdate, 0),
          createdOn = na_if(createdOn, 0)) |>
   mutate(newestItemPubdate_p = anytime(newestItemPubdate),
