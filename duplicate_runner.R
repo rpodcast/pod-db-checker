@@ -122,6 +122,21 @@ podcast_dup_df <- filter(db_dedup, record_group %in% group_ids)
 
 logger::log_info("Number of flagged duplicate entries in database: {nrow(podcast_dup_df)}")
 
+# perform data cleaning
+podcast_dup_df <- podcast_dup_df |>
+  tibble::as_tibble() |>
+  mutate(newestItemPubdate = na_if(newestItemPubdate, 0),
+         oldestItemPubdate = na_if(oldestItemPubdate, 0),
+         title = na_if(title, ""),
+         lastUpdate = na_if(lastUpdate, 0),
+         createdOn = na_if(createdOn, 0),
+         newestEnclosureDuration = na_if(newestEnclosureDuration, 0)) |>
+  mutate(newestItemPubdate_p = anytime(newestItemPubdate),
+         oldestItemPubdate_p = anytime(oldestItemPubdate),
+         createdOn_p = anytime(createdOn)) |>
+  mutate(pub_timespan_days = lubridate::interval(oldestItemPubdate_p, newestItemPubdate_p) / lubridate::ddays(1)) |>
+  mutate(created_timespan_days = lubridate::interval(createdOn_p, Sys.time()) / lubridate::ddays(1))
+
 # create parquet version of duplicate data and send to s3
 logger::log_info("Creating parquet version of duplicate dataset")
 arrow::write_parquet(podcast_dup_df, fs::path(db_tmp_dir, "podcast_dup_df.parquet"))
@@ -149,17 +164,17 @@ s3_file_copy(
 # create duplicates analysis metrics data frame
 logger::log_info("Deriving podcast duplicate analytics")
 analysis_metrics_df <- podcast_dup_df |>
-  tibble::as_tibble() |>
-  mutate(newestItemPubdate = na_if(newestItemPubdate, 0),
-         oldestItemPubdate = na_if(oldestItemPubdate, 0),
-         title = na_if(title, ""),
-         lastUpdate = na_if(lastUpdate, 0),
-         createdOn = na_if(createdOn, 0)) |>
-  mutate(newestItemPubdate_p = anytime(newestItemPubdate),
-         oldestItemPubdate_p = anytime(oldestItemPubdate),
-         createdOn_p = anytime(createdOn)) |>
-  mutate(pub_timespan_days = lubridate::interval(oldestItemPubdate_p, newestItemPubdate_p) / lubridate::ddays(1)) |>
-  mutate(created_timespan_days = lubridate::interval(createdOn_p, Sys.time()) / lubridate::ddays(1)) |>
+  # tibble::as_tibble() |>
+  # mutate(newestItemPubdate = na_if(newestItemPubdate, 0),
+  #        oldestItemPubdate = na_if(oldestItemPubdate, 0),
+  #        title = na_if(title, ""),
+  #        lastUpdate = na_if(lastUpdate, 0),
+  #        createdOn = na_if(createdOn, 0)) |>
+  # mutate(newestItemPubdate_p = anytime(newestItemPubdate),
+  #        oldestItemPubdate_p = anytime(oldestItemPubdate),
+  #        createdOn_p = anytime(createdOn)) |>
+  # mutate(pub_timespan_days = lubridate::interval(oldestItemPubdate_p, newestItemPubdate_p) / lubridate::ddays(1)) |>
+  # mutate(created_timespan_days = lubridate::interval(createdOn_p, Sys.time()) / lubridate::ddays(1)) |>
   nest(.by = record_group) |>
   mutate(
     metrics = purrr::map(data, ~{
@@ -175,9 +190,6 @@ analysis_metrics_df <- podcast_dup_df |>
         med_newestEnclosureDuration = median(.x$newestEnclosureDuration, na.rm = TRUE),
         med_created_timespan_days = median(.x$created_timespan_days, na.rm = TRUE),
         med_pub_timespan_days = median(.x$pub_timespan_days)
-        #newestEnclosureDuration_list = list(.x$newestEnclosureDuration),
-        #created_timespan_days_list = list(.x$created_timespan_days),
-        #pub_timespan_days_list = list(.x$pub_timespan_days)
       )
     })
   ) |>
