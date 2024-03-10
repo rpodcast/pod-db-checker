@@ -138,6 +138,12 @@ podcast_dup_df <- podcast_dup_df |>
   mutate(pub_timespan_days = lubridate::interval(oldestItemPubdate_p, newestItemPubdate_p) / lubridate::ddays(1)) |>
   mutate(created_timespan_days = lubridate::interval(createdOn_p, Sys.time()) / lubridate::ddays(1))
 
+cat_df <- gen_categories_df(podcast_dup_df)
+
+podcast_dup_df <- podcast_dup_df |>
+  dplyr::select(!starts_with("category")) |>
+  left_join(cat_df, by = "id")
+
 # create parquet version of duplicate data and send to s3
 logger::log_info("Creating parquet version of duplicate dataset")
 arrow::write_parquet(podcast_dup_df, fs::path(db_tmp_dir, "podcast_dup_df.parquet"))
@@ -171,6 +177,7 @@ analysis_metrics_df <- podcast_dup_df |>
       tibble::tibble(
         n_records = nrow(.x),
         group_title = unique(.x$title),
+        group_categories = unique(.x$category),
         n_distinct_podcastGuid = length(unique(.x$podcastGuid)),
         n_distinct_title = length(unique(.x$title)),
         n_distinct_chash = length(unique(.x$chash)),
