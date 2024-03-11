@@ -10,6 +10,8 @@ library(s3fs)
 
 source("R/utils.R")
 
+current_timestamp <- lubridate::now()
+
 # establish file and db connections ----
 db_url <- "https://public.podcastindex.org/podcastindex_feeds.db.tgz"
 db_tgz_file <- fs::path_file(db_url)
@@ -41,6 +43,9 @@ logger::log_layout(
   ),
   index = 2
 )
+
+# add timestamp to log
+logger::log_info("Begin Data Processing")
 
 # download and extract podcast database ----
 logger::log_info("Downloading podcast database")
