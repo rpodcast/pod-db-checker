@@ -176,8 +176,6 @@ analysis_metrics_df <- podcast_dup_df |>
     metrics = purrr::map(data, ~{
       tibble::tibble(
         n_records = nrow(.x),
-        group_title = unique(.x$title),
-        group_categories = unique(.x$category),
         n_distinct_podcastGuid = length(unique(.x$podcastGuid)),
         n_distinct_title = length(unique(.x$title)),
         n_distinct_chash = length(unique(.x$chash)),
