@@ -128,7 +128,9 @@ agent_2_prep <-
       columns = updateFrequency,
       left = 0,
       right = 9,
-      active = TRUE
+      active = TRUE,
+      step_id = "step-range-updateFrequency",
+      label = "Update frequency between 0 and 9"
     ) |>
     rows_distinct(
       columns = vars(itunesId),
