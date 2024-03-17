@@ -201,6 +201,38 @@ s3_file_copy(
   overwrite = TRUE
 )
 
+# write individual extracts to object storage
+# obtain the step_id values for failed assessments
+failed_i_values <- agent_2_rep$validation_set |>
+  dplyr::filter(!all_passed) |>
+  dplyr::pull(i)
+
+failed_step_id_values <- agent_2_rep$validation_set |>
+  dplyr::filter(!all_passed) |>
+  dplyr::pull(step_id)
+
+# create rds and parquet versions of extracts
+# copy to object storage
+logger::log_info("Writing extracts of failed pointblank assessments to object storage")
+purrr::map2(failed_i_values, failed_step_id_values, ~{
+  extract_df <- get_data_extracts(agent_2_rep, .x)
+  saveRDS(extract_df, fs::path(db_tmp_dir, paste0(.y, ".rds")))
+  s3_file_copy(
+    path = fs::path(db_tmp_dir, paste0(.y, ".rds")),
+    new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".rds"))),
+    ACL = "public-read",
+    overwrite = TRUE
+  )
+
+  arrow::write_parquet(extract_df, fs::path(db_tmp_dir, paste0(.y, ".parquet")))
+  s3_file_copy(
+    path = fs::path(db_tmp_dir, paste0(.y, ".parquet")),
+    new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".parquet"))),
+    ACL = "public-read",
+    overwrite = TRUE
+  )
+})
+
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
