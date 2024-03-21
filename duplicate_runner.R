@@ -208,6 +208,8 @@ s3_file_copy(
   overwrite = TRUE
 )
 
+logger::log_info("End Data Processing")
+
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
