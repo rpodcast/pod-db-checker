@@ -222,7 +222,7 @@ logger::log_info("End Data Processing")
 
 # create timestamp text file and send to s3
 logger::log_info("Creating timestamp file")
-writeLines(current_timestamp_print, fs::path(db_temp_dir, "job_timestamp.txt"))
+writeLines(current_timestamp_print, fs::path(db_tmp_dir, "job_timestamp.txt"))
 s3_file_copy(
   path = fs::path(db_tmp_dir, "job_timestamp.txt"),
   new_path = paste0(s3_bucket_path, fs::path("exports", "job_timestamp.txt")),
