@@ -11,13 +11,12 @@ library(s3fs)
 source("R/utils.R")
 
 current_timestamp <- lubridate::now()
+current_timestamp_print <- format(Sys.time(), "%Y-%m-%d %H:%M:%S %p %Z")
 
 # establish file and db connections ----
 db_url <- "https://public.podcastindex.org/podcastindex_feeds.db.tgz"
 db_tgz_file <- fs::path_file(db_url)
 db_file <- fs::path_ext_remove(db_tgz_file)
-db_tmp_dir <- fs::path_temp("dbdir")
-if (!fs::dir_exists(db_tmp_dir)) fs::dir_create(db_tmp_dir)
 log_dir <- "logs"
 log_file <- paste0("pdblog_", format(Sys.time(), "%Y-%m-%d"), ".log")
 s3_bucket_path <- "s3://podcast20-projects/"
@@ -49,10 +48,20 @@ logger::log_info("Begin Data Processing")
 
 # download and extract podcast database ----
 logger::log_info("Downloading podcast database")
-curl::curl_download(db_url, destfile = fs::path(db_tmp_dir, db_tgz_file), quiet = TRUE)
+
+db_tmp_dir <- ifelse(!nzchar(Sys.getenv("GITHUB_ACTION")), fs::path("db_export"), fs::path_temp("dbdir"))
+if (!fs::dir_exists(db_tmp_dir)) fs::dir_create(db_tmp_dir)
+
+if (!fs::file_exists(fs::path(db_tmp_dir, db_tgz_file))) {
+  curl::curl_download(db_url, destfile = fs::path(db_tmp_dir, db_tgz_file), quiet = TRUE)
+}
 
 logger::log_info("Extracting podcast database file")
-archive::archive_extract(fs::path(db_tmp_dir, db_tgz_file), dir = db_tmp_dir)
+
+if (!fs::file_exists(fs::path(db_tmp_dir, db_file))) {
+  archive::archive_extract(fs::path(db_tmp_dir, db_tgz_file), dir = db_tmp_dir)
+}
+
 db_file_size <- fs::file_size(fs::path(db_tmp_dir, db_file)) |> unname()
 logger::log_info('DB size: {db_file_size}')
 
@@ -80,15 +89,16 @@ logger::log_info("Pairs dataset includes {nrow(db_pairs)} rows")
 
 # compare pairs on url, newestEnclosureUrl, and imageUrl
 logger::log_info("Comparing pairs")
+threshold_value <- 0.95
+#threshold_value <- 0.99
 reclin2::compare_pairs(
   db_pairs,
   on = c("url", "newestEnclosureUrl", "imageUrl"),
-  default_comparator = reclin2::cmp_jarowinkler(),
+  default_comparator = reclin2::cmp_jarowinkler(threshold = threshold_value),
   inplace = TRUE
 )
 
 # select pairs with threshold at or above 0.95
-threshold_value <- 0.95
 logger::log_info("Select pairs with threshold above {threshold_value}")
 
 reclin2::select_threshold(
@@ -209,6 +219,16 @@ s3_file_copy(
 )
 
 logger::log_info("End Data Processing")
+
+# create timestamp text file and send to s3
+logger::log_info("Creating timestamp file")
+writeLines(current_timestamp_print, fs::path(db_temp_dir, "job_timestamp.txt"))
+s3_file_copy(
+  path = fs::path(db_tmp_dir, "job_timestamp.txt"),
+  new_path = paste0(s3_bucket_path, fs::path("exports", "job_timestamp.txt")),
+  ACL = "public-read",
+  overwrite = TRUE
+)
 
 # copy log to object storage
 s3_file_copy(
