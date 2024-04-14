@@ -230,6 +230,15 @@ s3_file_copy(
   overwrite = TRUE
 )
 
+# send raw database file to object storage as a backup
+logger::log_info("Sending raw database file to object storage")
+s3_file_copy(
+  path = fs::path(db_tmp_dir, db_tgz_file),
+  new_path = paste0(s3_bucket_path, fs::path("exports", db_tgz_file)),
+  ACL = "public-read",
+  overwrite = TRUE
+)
+
 # copy log to object storage
 s3_file_copy(
   path = fs::path(log_dir, log_file),
