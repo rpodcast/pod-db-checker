@@ -57,6 +57,14 @@ con <- DBI::dbConnect(
   RSQLite::SQLite(),
   fs::path(db_tmp_dir, db_file)
 )
+
+# database cleaning: Create itunesIdText as text variable
+logger::log_info("Create itunesIdText variable as text")
+itunes_add_q <- dbSendStatement(con, "ALTER TABLE podcasts ADD  COLUMN itunesIdText text")
+dbClearResult(itunes_add_q)
+itunes_update_q <- dbSendStatement(con, "UPDATE podcasts SET itunesIdText = CAST(itunesId AS text)")
+dbClearResult(itunes_update_q)
+
 podcasts_db <- tbl(con, "podcasts")
 
 # create pointblank agent
@@ -133,7 +141,12 @@ agent_2_prep <-
       label = "Update frequency between 0 and 9"
     ) |>
     rows_distinct(
-      columns = vars(itunesId),
+      columns = vars(itunesIdText),
+      preconditions = function(x) {
+        x |>
+          dplyr::mutate(itunesIdText = na_if(itunesIdText, "")) |>
+          dplyr::filter(!is.na(itunesIdText))
+      },
       active = TRUE,
       step_id = "step-unique-itunesId",
       label = "Unique iTunes ID"
@@ -197,6 +210,20 @@ logger::log_info("Sending pointblank agent result file to object storage")
 s3_file_copy(
   path = fs::path(report_tmp_dir, "podcastdb_pointblank_object"),
   new_path = paste0(s3_bucket_path, fs::path("exports", "podcastdb_pointblank_object")),
+  ACL = "public-read",
+  overwrite = TRUE
+)
+
+# write pointblank plan metadata to object storage
+agent_meta_df <- agent_2_rep$validation_set |>
+  select(i, i_o, step_id, label, brief, sha1, assertion_type, active)
+
+saveRDS(agent_meta_df, fs::path(db_tmp_dir, "agent_meta_df.rds"))
+
+logger::log_info("Sending agent meta rds file to object storage")
+s3_file_copy(
+  path = fs::path(db_tmp_dir, "agent_meta_df.rds"),
+  new_path = paste0(s3_bucket_path, fs::path("exports", "agent_meta_df.rds")),
   ACL = "public-read",
   overwrite = TRUE
 )

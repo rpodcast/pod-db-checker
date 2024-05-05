@@ -70,6 +70,14 @@ con <- DBI::dbConnect(
   RSQLite::SQLite(),
   fs::path(db_tmp_dir, db_file)
 )
+
+# database cleaning: Create itunesIdText as text variable
+logger::log_info("Create itunesIdText variable as text")
+itunes_add_q <- dbSendStatement(con, "ALTER TABLE podcasts ADD  COLUMN itunesIdText text")
+dbClearResult(itunes_add_q)
+itunes_update_q <- dbSendStatement(con, "UPDATE podcasts SET itunesIdText = CAST(itunesId AS text)")
+dbClearResult(itunes_update_q)
+
 podcasts_db <- tbl(con, "podcasts")
 
 # remove records with missing chash value
