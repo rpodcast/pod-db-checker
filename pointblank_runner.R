@@ -255,7 +255,8 @@ failed_step_id_values <- agent_2_rep$validation_set |>
 logger::log_info("Writing extracts of failed pointblank assessments to object storage")
 purrr::map2(failed_i_values, failed_step_id_values, ~{
   extract_df <- get_data_extracts(agent_2_rep, .x)
-  saveRDS(extract_df, fs::path(db_tmp_dir, paste0(.y, ".rds")))
+  clean_extract_df <- process_extract_df(extract_df, step_id_value = .y, podcasts_db = podcasts_db)
+  saveRDS(clean_extract_df, fs::path(db_tmp_dir, paste0(.y, ".rds")))
   s3_file_copy(
     path = fs::path(db_tmp_dir, paste0(.y, ".rds")),
     new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".rds"))),
@@ -263,7 +264,7 @@ purrr::map2(failed_i_values, failed_step_id_values, ~{
     overwrite = TRUE
   )
 
-  arrow::write_parquet(extract_df, fs::path(db_tmp_dir, paste0(.y, ".parquet")))
+  arrow::write_parquet(clean_extract_df, fs::path(db_tmp_dir, paste0(.y, ".parquet")))
   s3_file_copy(
     path = fs::path(db_tmp_dir, paste0(.y, ".parquet")),
     new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".parquet"))),
