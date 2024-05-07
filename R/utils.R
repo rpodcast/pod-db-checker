@@ -76,6 +76,34 @@ clean_podcast_df <- function(data, dev_mode = FALSE) {
   return(df)
 }
 
+process_extract_df <- function(extract_df, step_id_value, podcasts_db) {
+  # define post-processing function to use
+  # clean_only: 1, 3, 4, 7
+  clean_only_steps <- c(
+    "step-nonmissing-podcastguid",
+    "step-nonmissing-chash",
+    "step-nonmissing-newestEnclosureDuration",
+    "step-valid-newestEnclosureDuration",
+  )
+
+  if (step_id_value %in% clean_only_steps) {
+    df <- clean_podcast_df(extract_df)
+  } else {
+    if (step_id_value == "step-unique-podcastguid") {
+      df <- process_unique_podcastguid(extract_df, podcasts_db)
+    } else if (step_id_value == "step-unique-itunesId") {
+      df <- process_unique_itunesid(extract_df, podcasts_db)
+    } else if (step_id_value == "step-dup-chash-host") {
+      df <- process_chash_host(extract_df, podcasts_db)
+    } else if (step_id_value == "step-dup-title-imageUrl") {
+      df <- process_title_image(extract_df, podcasts_db)
+    } else if (step_id_value == "step-dup-chash-title-imageUrl") {
+      df <- process_chash_title_image(extract_df, podcasts_db)
+    }
+  }
+  return(df)
+}
+
 process_unique_podcastguid <- function(extract_df, podcasts_db, clean = TRUE) {
   podcast_guids <- unique(extract_df$podcastGuid)
   df <- podcasts_db |>
