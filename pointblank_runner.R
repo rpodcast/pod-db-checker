@@ -84,7 +84,8 @@ agent_2_prep <-
       preconditions = function(x) dplyr::mutate(x, podcastGuid = na_if(podcastGuid, "")),
       active = TRUE,
       step_id = "step-nonmissing-podcastguid",
-      label = "Non-missing podcast guid"
+      label = "Non-missing podcast guid",
+      brief = "Preprocessing: None"
     ) |>
     rows_distinct(
       columns = vars(podcastGuid),
@@ -95,42 +96,48 @@ agent_2_prep <-
       },
       active = TRUE,
       step_id = "step-unique-podcastguid",
-      label = "Unique podcast guid values"
+      label = "Unique podcast guid values",
+      brief = "Preprocessing: Remove records with missing Podcast GUID"
     ) |>
     col_vals_not_null(
       columns = chash,
       preconditions = function(x) dplyr::mutate(x, chash = na_if(chash, "")),
       active = TRUE,
       step_id = "step-nonmissing-chash",
-      label = "Non-missing content hash"
+      label = "Non-missing content hash",
+      brief = "Preprocessing: None"
     ) |>
     col_vals_not_null(
       columns = newestEnclosureDuration,
       preconditions = function(x) dplyr::mutate(x, newestEnclosureDuration = na_if(newestEnclosureDuration, "")),
       active = TRUE,
       step_id = "step-nonmissing-newestEnclosureDuration",
-      label = "Non-missing newest enclosure duration"
+      label = "Non-missing newest enclosure duration",
+      brief = "Preprocessing: None"
     ) |>
     col_vals_in_set(
       columns = explicit,
       set = c(0, 1),
       active = TRUE,
       step_id = "step-valid-explicit",
-      label = "Valid explicit values"
+      label = "Valid explicit values",
+      brief = "Preprocessing: None"
     ) |>
     col_vals_gte(
       columns = lastHttpStatus,
       value = 0,
       active = TRUE,
       step_id = "step-valid-lastHttpStatus",
-      label = "Valid last HTTP status values"
+      label = "Valid last HTTP status values",
+      brief = "Preprocessing: None"
     ) |>
     col_vals_gte(
       columns = newestEnclosureDuration,
       value = 0,
       active = TRUE,
       step_id = "step-valid-newestEnclosureDuration",
-      label = "Valid newest enclosure duration"
+      label = "Valid newest enclosure duration",
+      brief = "Preprocessing: None"
     ) |>
     col_vals_between(
       columns = updateFrequency,
@@ -138,7 +145,8 @@ agent_2_prep <-
       right = 9,
       active = TRUE,
       step_id = "step-range-updateFrequency",
-      label = "Update frequency between 0 and 9"
+      label = "Update frequency between 0 and 9",
+      brief = "Preprocessing: None"
     ) |>
     rows_distinct(
       columns = vars(itunesIdText),
@@ -149,7 +157,8 @@ agent_2_prep <-
       },
       active = TRUE,
       step_id = "step-unique-itunesId",
-      label = "Unique iTunes ID"
+      label = "Unique iTunes ID",
+      brief = "Preprocessing: Remove records without iTunes ID"
     ) |>
     rows_distinct(
       columns = vars(chash, host),
@@ -160,7 +169,8 @@ agent_2_prep <-
       },
       step_id = "step-dup-chash-host",
       label = "Duplicate chash in host",
-      active = TRUE
+      active = TRUE,
+      brief = "Preprocessing: Remove records with missing content hash"
     ) |>
     rows_distinct(
       columns = vars(title, imageUrl),
@@ -171,7 +181,8 @@ agent_2_prep <-
       },
       step_id = "step-dup-title-imageUrl",
       label = "Duplicate title and imageUrl",
-      active = TRUE
+      active = TRUE,
+      brief = "Preprocessing: Remove records with missing content hash"
     ) |>
     rows_distinct(
       columns = vars(chash, title, imageUrl),
@@ -184,7 +195,8 @@ agent_2_prep <-
       },
       step_id = "step-dup-chash-title-imageUrl",
       label = "Duplicate chash, title, and imageUrl",
-      active = TRUE
+      active = TRUE,
+      brief = "Preprocessing: Remove records with missing content hash"
     )
 
 # generate poinblank report object
