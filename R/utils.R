@@ -83,7 +83,7 @@ process_extract_df <- function(extract_df, step_id_value, podcasts_db) {
     "step-nonmissing-podcastguid",
     "step-nonmissing-chash",
     "step-nonmissing-newestEnclosureDuration",
-    "step-valid-newestEnclosureDuration",
+    "step-valid-newestEnclosureDuration"
   )
 
   if (step_id_value %in% clean_only_steps) {
