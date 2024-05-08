@@ -259,20 +259,20 @@ purrr::walk2(failed_i_values, failed_step_id_values, ~{
   extract_df <- get_data_extracts(agent_2_rep, .x)
   clean_extract_df <- process_extract_df(extract_df, step_id_value = .y, podcasts_db = podcasts_db)
   saveRDS(clean_extract_df, fs::path(db_tmp_dir, paste0(.y, ".rds")))
-  # s3_file_copy(
-  #   path = fs::path(db_tmp_dir, paste0(.y, ".rds")),
-  #   new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".rds"))),
-  #   ACL = "public-read",
-  #   overwrite = TRUE
-  # )
+  s3_file_copy(
+    path = fs::path(db_tmp_dir, paste0(.y, ".rds")),
+    new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".rds"))),
+    ACL = "public-read",
+    overwrite = TRUE
+  )
 
   arrow::write_parquet(clean_extract_df, fs::path(db_tmp_dir, paste0(.y, ".parquet")))
-  # s3_file_copy(
-  #   path = fs::path(db_tmp_dir, paste0(.y, ".parquet")),
-  #   new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".parquet"))),
-  #   ACL = "public-read",
-  #   overwrite = TRUE
-  # )
+  s3_file_copy(
+    path = fs::path(db_tmp_dir, paste0(.y, ".parquet")),
+    new_path = paste0(s3_bucket_path, fs::path("exports", paste0(.y, ".parquet"))),
+    ACL = "public-read",
+    overwrite = TRUE
+  )
 })
 
 # copy log to object storage
