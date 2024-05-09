@@ -100,7 +100,6 @@ process_extract_df <- function(extract_df, step_id_value, podcasts_db) {
     } else if (step_id_value == "step-dup-chash-title-imageUrl") {
       df <- process_chash_title_image(extract_df, podcasts_db)
     }
-    df <- clean_podcast_df(df)
   }
   return(df)
 }
