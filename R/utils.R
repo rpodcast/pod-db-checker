@@ -114,6 +114,8 @@ process_unique_podcastguid <- function(extract_df, podcasts_db, clean = TRUE) {
     df <- clean_podcast_df(df)
   }
 
+  df <- dplyr::arrange(df, podcastGuid)
+
   return(df)
 }
 
@@ -129,6 +131,8 @@ process_unique_itunesid <- function(extract_df, podcasts_db, clean = TRUE) {
 
   df <- df |>
     select(podcastGuid, itunesIdText, everything())
+
+  df <- dplyr::arrange(df, itunesIdText)
 
   return(df)
 }
@@ -165,7 +169,8 @@ process_title_image <- function(extract_df, podcasts_db, clean = TRUE) {
   }
 
   df <- df |>
-    select(podcastGuid, title, imageUrl, everything())
+    select(podcastGuid, title, imageUrl, everything()) |>
+    arrange(title, imageUrl)
 
   return(df)
 }
@@ -185,7 +190,8 @@ process_chash_title_image <- function(extract_df, podcasts_db, clean = TRUE) {
   }
 
   df <- df |>
-    select(podcastGuid, chash, title, imageUrl, everything())
+    select(podcastGuid, chash, title, imageUrl, everything()) |>
+    arrange(chash, title, imageUrl)
 
   return(df)
 }
