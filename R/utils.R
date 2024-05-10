@@ -54,12 +54,12 @@ clean_podcast_df <- function(data, dev_mode = FALSE) {
   df <- df |>
     dplyr::select(!starts_with("category")) |>
     left_join(cat_df, by = "id") |>
-    dplyr::mutate(
-      episodeCount_colors = dplyr::case_when(
-        episodeCount >= 0 ~ 'darkgreen',
-        TRUE ~ 'orange'
-      )
-    ) |>
+    # dplyr::mutate(
+    #   episodeCount_colors = dplyr::case_when(
+    #     episodeCount >= 0 ~ 'darkgreen',
+    #     TRUE ~ 'orange'
+    #   )
+    # ) |>
     dplyr::mutate(
       imageUrl = dplyr::case_when(
         imageUrl == "" ~ "https://podcastindex.org/images/no-cover-art.png",
