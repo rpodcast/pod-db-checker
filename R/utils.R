@@ -39,6 +39,7 @@ clean_podcast_df <- function(data, dev_mode = FALSE) {
          title = na_if(title, ""),
          lastUpdate = na_if(lastUpdate, 0),
          createdOn = na_if(createdOn, 0),
+         newestEnclosureDuration = as.double(newestEnclosureDuration),
          newestEnclosureDuration = na_if(newestEnclosureDuration, 0)) |>
   mutate(lastUpdate_p = anytime(lastUpdate),
          newestItemPubdate_p = anytime(newestItemPubdate),
